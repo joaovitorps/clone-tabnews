@@ -12,8 +12,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function migrations(request, response) {
   const migrationsConfig = {
-    databaseUrl: process.env.DATABASE_URL,
-    // dbClient: database,
+    // databaseUrl: process.env.DATABASE_URL,
+    dbClient: database,
     dir: join("infra", "migrations"),
     direction: "up",
     dryRun: true,
