@@ -1,5 +1,5 @@
 function Home() {
-  return <h1>Bora que 2024 é nosso!!!</h1>;
+  return <h1>Júlia, eu te amo, meu amor!!! Para sempre ∞</h1>;
 }
 
 export default Home;
