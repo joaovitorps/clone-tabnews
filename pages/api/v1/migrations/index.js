@@ -12,41 +12,49 @@ import { NextApiRequest, NextApiResponse } from "next";
  */
 
 export default async function migrations(request, response) {
-  const dbNewClient = await database.getNewClient();
-  const migrationsConfig = {
-    // databaseUrl: process.env.DATABASE_URL,
-    dbClient: dbNewClient,
-    dir: join("infra", "migrations"),
-    direction: "up",
-    dryRun: true,
-    verbose: true,
-    migrationsTable: "pgmigrations",
-  };
+  const allowedHttpMethods = ['GET', 'POST'];
 
-  if (request.method === "GET") {
-    const pendingMigrations = await runner({
-      ...migrationsConfig,
-    });
+  let dbNewClient;
 
-    await dbNewClient.end();
-
-    return response.status(200).json(pendingMigrations);
+  if (!allowedHttpMethods.includes(request.method)) {
+    return response.status(405).json({ 'message': `Method ${request.method} not allowed.` });
   }
 
-  if (request.method === "POST") {
-    const migratedMigrations = await runner({
-      ...migrationsConfig,
-      dryRun: false,
-    });
+  try {
+    dbNewClient = await database.getNewClient();
+    const migrationsConfig = {
+      dbClient: dbNewClient,
+      dir: join("infra", "migrations"),
+      direction: "up",
+      dryRun: true,
+      verbose: true,
+      migrationsTable: "pgmigrations",
+    };
 
-    await dbNewClient.end();
+    if (request.method === "GET") {
+      const pendingMigrations = await runner({
+        ...migrationsConfig,
+      });
 
-    if (migratedMigrations.length > 0) {
-      return response.status(201).json(migratedMigrations);
+      return response.status(200).json(pendingMigrations);
     }
 
-    return response.status(200).json(migratedMigrations);
-  }
+    if (request.method === "POST") {
+      const migratedMigrations = await runner({
+        ...migrationsConfig,
+        dryRun: false,
+      });
 
-  return response.status(405).end();
+      if (migratedMigrations.length > 0) {
+        return response.status(201).json(migratedMigrations);
+      }
+
+      return response.status(200).json(migratedMigrations);
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    await dbNewClient.end();
+  }
 }
