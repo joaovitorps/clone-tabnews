@@ -12,12 +12,14 @@ import { NextApiRequest, NextApiResponse } from "next";
  */
 
 export default async function migrations(request, response) {
-  const allowedHttpMethods = ['GET', 'POST'];
+  const allowedHttpMethods = ["GET", "POST"];
 
   let dbNewClient;
 
   if (!allowedHttpMethods.includes(request.method)) {
-    return response.status(405).json({ 'message': `Method ${request.method} not allowed.` });
+    return response
+      .status(405)
+      .json({ message: `Method ${request.method} not allowed.` });
   }
 
   try {
