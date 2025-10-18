@@ -25,10 +25,3 @@ test("GET to /api/v1/status should return 200", async () => {
   expect(typeof databasePath.version).toBe("string");
   expect(databasePath.version).toEqual("16.0");
 });
-
-// test.only("Teste de SQL Injection", async () => {
-//   const response = await fetch(
-//     // "http://localhost:3000/api/v1/status?dbName=the_local_db",
-//     "http://localhost:3000/api/v1/status?dbName='; SELECT pg_sleep(4) --",
-//   );
-// });

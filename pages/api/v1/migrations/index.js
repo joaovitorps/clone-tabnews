@@ -2,14 +2,6 @@ import database from "infra/database.js";
 import runner from "node-pg-migrate";
 
 import { join } from "node:path";
-import { NextApiRequest, NextApiResponse } from "next";
-
-/**
- *
- * @param {NextApiRequest} request
- * @param {NextApiResponse} response
- * @returns
- */
 
 export default async function migrations(request, response) {
   const allowedHttpMethods = ["GET", "POST"];
