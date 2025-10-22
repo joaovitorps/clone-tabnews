@@ -1,0 +1,14 @@
+#!/bin/bash
+
+trap ctrl_c INT
+
+function ctrl_c() {
+    if [ $? -eq 130 ]
+      then
+        npm run postdev
+    fi
+    
+    exit $?
+}
+
+npm run dev
