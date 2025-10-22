@@ -44,6 +44,7 @@
     "eslint-plugin-jest": "^28.6.0",
     "husky": "^9.1.4",
     "jest": "^29.6.2",
+    "npm-check-updates": "^19.1.1",
     "prettier": "^3.2.5"
   },
   "config": {
