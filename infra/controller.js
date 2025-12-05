@@ -1,13 +1,23 @@
-import { InternalServerError, MethodNotAllowedError } from "./errors";
+import {
+  InternalServerError,
+  MethodNotAllowedError,
+  ValidationError,
+  NotFoundError,
+} from "./errors";
 
 async function errorHandler(error, request, response) {
-  console.log(error);
+  if (error instanceof ValidationError || error instanceof NotFoundError) {
+    return response.status(error.statusCode).json(error);
+  }
+
+  console.error(error);
+
   const errorObj = new InternalServerError({
     statusCode: error.statusCode,
     cause: error,
   });
 
-  console.log(errorObj);
+  console.error(errorObj);
 
   response.status(errorObj.statusCode).json(errorObj);
 }
