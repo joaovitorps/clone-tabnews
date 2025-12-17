@@ -2,6 +2,7 @@ import { version as uuidVersion, validate as uuidValidate } from "uuid";
 
 import database from "infra/database.js";
 import orchestrator from "tests/orchestrator.js";
+import password from "../../../../../models/password";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -34,7 +35,7 @@ describe("POST /api/v1/users", () => {
         id: responseBody.id,
         username: userBody.username,
         email: userBody.email,
-        password: userBody.password,
+        password: responseBody.password,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -49,6 +50,25 @@ describe("POST /api/v1/users", () => {
       const users = await database.query("SELECT * FROM users;");
 
       expect(users.rows.length).toBeGreaterThan(0);
+
+      const hashCorrectVersion = users.rows[0].password.startsWith("$2b$");
+      expect(hashCorrectVersion).toBe(true);
+
+      const rounds = password.getRounds(users.rows[0].password);
+      expect(rounds).toEqual(password.getNumberOfRounds);
+
+      const isCorrectHash = await password.compare(
+        userBody.password,
+        users.rows[0].password,
+      );
+
+      expect(isCorrectHash).toBe(true);
+
+      const isNotCorrectHash = await password.compare(
+        "wrongPassword",
+        users.rows[0].password,
+      );
+      expect(isNotCorrectHash).toBe(false);
     });
 
     test("With duplicated 'email'", async () => {
